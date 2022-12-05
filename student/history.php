@@ -9,10 +9,11 @@ if ($_SESSION['RollNo']) {
 <!DOCTYPE html>
 <html lang="en">
 
+  
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sách</title>
+        <title>Lịch sử</title>
         <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link type="text/css" href="css/themes.css" rel="stylesheet">
@@ -68,87 +69,74 @@ if ($_SESSION['RollNo']) {
                         <!--/.sidebar-->
                     </div>
                     <!--/.span3-->
+                    
                     <div class="span9">
-                        <form class="form-horizontal row-fluid" action="book.php" method="post">
+                        <form class="form-horizontal row-fluid" action="history.php" method="post">
                                         <div class="control-group">
                                             <label class="control-label" for="Search"><b>Tìm kiếm:</b></label>
                                             <div class="controls">
-                                                <input type="text" id="title" name="title" placeholder="Enter Name/ID of Book" class="span8" required>
+                                                <input type="text" id="title" name="title" placeholder="Enter Book Name/Book Id." class="span8" required>
                                                 <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Tìm kiếm</button>
                                             </div>
                                         </div>
                                     </form>
                                     <br>
                                     <?php
+                                    $rollno = $_SESSION['RollNo'];
                                     if(isset($_POST['submit']))
                                         {$s=$_POST['title'];
-                                            $sql="select * from LMS.book where BookId='$s' or Title like '%$s%'";
+                                            $sql="select * from LMS.record,LMS.book where RollNo = '$rollno' and Date_of_Issue is NOT NULL and Date_of_Return is NOT NULL and book.Bookid = record.BookId and (record.BookId='$s' or Title like '%$s%')";
+
                                         }
                                     else
-                                        $sql="select * from LMS.book order by Availability DESC";
+                                        $sql="select * from LMS.record,LMS.book where RollNo = '$rollno' and Date_of_Issue is NOT NULL and Date_of_Return is NOT NULL and book.Bookid = record.BookId";
 
                                     $result=$conn->query($sql);
                                     $rowcount=mysqli_num_rows($result);
 
                                     if(!($rowcount))
-                                        echo "<br><center><h2><b><i>No Results</i></b></h2></center>";
+                                    	echo "<br><center><h2><b><i>No Results</i></b></h2></center>";
                                     else
                                     {
 
-                                    
                                     ?>
                         <table class="table" id = "tables">
                                   <thead>
                                     <tr>
                                       <th>Mã sách</th>
                                       <th>Tên sách</th>
-                                      <th>Số Lượng</th>
-                                      <th></th>
+                                      <th>Ngày mượn</th>
+                                      <th>Ngày đáo hạn</th>
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    <?php
+
+                                <?php
+
                             
-                            //$result=$conn->query($sql);
                             while($row=$result->fetch_assoc())
                             {
                                 $bookid=$row['BookId'];
                                 $name=$row['Title'];
-                                $avail=$row['Availability'];
+                                $issuedate=$row['Date_of_Issue'];
+                                $returndate=$row['Date_of_Return'];                            
                             ?>
+
                                     <tr>
                                       <td><?php echo $bookid ?></td>
                                       <td><?php echo $name ?></td>
-                                      <td><b><?php 
-                                           if($avail > 0)
-                                              echo "<font color=\"green\">Có</font>";
-                                            else
-                                            	echo "<font color=\"red\">Không có</font>";
-
-                                                 ?>
-                                                 	
-                                                 </b></td>
-                                      <td><center><a href="bookdetails.php?id=<?php echo $bookid; ?>" class="btn btn-primary">Chi tiết</a>
-                                      	<?php
-                                      	if($avail > 0)
-                                      		echo "<a href=\"issue_request.php?id=".$bookid."\" class=\"btn btn-success\">Mượn</a>";
-                                        ?>
-                                        </center></td>
+                                      <td><?php echo $issuedate ?></td>
+                                      <td><?php echo $returndate ?></td>
                                     </tr>
-                               <?php }} ?>
-                               </tbody>
+                            <?php }} ?>
+                                    </tbody>
                                 </table>
-                            </div>
-                    <!--/.span3-->
-                    <!--/.span9-->
-                
-                    <!--/.span3-->
-                    <!--/.span9-->
-                </div>
+                    </div>
                     <!--/.span9-->
                 </div>
             </div>
             <!--/.container-->
+        </div>
 <div class="footer">
             <div class="container">
                 <b class="copyright">&copy; 2022 HỆ THỐNG THƯ VIỆN</b>
