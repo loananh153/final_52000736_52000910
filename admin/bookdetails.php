@@ -8,10 +8,11 @@ if ($_SESSION['RollNo']) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sách</title>
+        <title>Thông Tin Sách</title>
         <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link type="text/css" href="css/themes.css" rel="stylesheet">
@@ -19,6 +20,7 @@ if ($_SESSION['RollNo']) {
         <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
             rel='stylesheet'>
     </head>
+    <body>
     <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -66,71 +68,54 @@ if ($_SESSION['RollNo']) {
                                 <li><a href="logout.php"><i class="menu-icon icon-signout"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
+                        <!--/.sidebar-->
                     </div>
 
                     <div class="span9">
-                  <form class="form-horizontal row-fluid" action="book.php" method="post">
-                                        <div class="control-group">
-                                            <label class="control-label" for="Search"><b>Tìm kiếm:</b></label>
-                                            <div class="controls">
-                                                <input type="text" id="title" name="title" placeholder="Enter Name/ID of Book" class="span8" required>
-                                                <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Tìm kiếm</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <br>
-                                    <?php
-                                    if(isset($_POST['submit']))
-                                        {$s=$_POST['title'];
-                                            $sql="select * from LMS.book where BookId='$s' or Title like '%$s%'";
-                                        }
-                                    else
-                                        $sql="select * from LMS.book";
+                        <div class="content">
 
-                                    $result=$conn->query($sql);
-                                    $rowcount=mysqli_num_rows($result);
-
-                                    if(!($rowcount))
-                                        echo "<br><center><h2><b><i>No Results</i></b></h2></center>";
-                                    else
-                                    {
-
-                                    
-                                    ?>
-                        <table class="table" id = "tables">
-                                  <thead>
-                                    <tr>
-                                      <th>Mã sách</th>
-                                      <th>Tên sách</th>
-                                      <th>Số lượng</th>
-                                      <th></th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <?php
+                        <div class="module">
+                            <div class="module-head" style = "background: #FF4C29">
+                                <h3 style = "color: white">Thông Tin Sách</h3>
+                            </div>
+                            <div class="module-body">
+                        <?php
+                            $x=$_GET['id'];
+                            $sql="select * from LMS.book where BookId='$x'";
+                            $result=$conn->query($sql);
+                            $row=$result->fetch_assoc();    
                             
-                            //$result=$conn->query($sql);
-                            while($row=$result->fetch_assoc())
-                            {
                                 $bookid=$row['BookId'];
                                 $name=$row['Title'];
+                                $publisher=$row['Publisher'];
+                                $year=$row['Year'];
                                 $avail=$row['Availability'];
-                            
+
+                                echo "<b>Mã Sách:</b> ".$bookid."<br><br>";
+                                echo "<b>Tên sách:</b> ".$name."<br><br>";
+                                $sql1="select * from LMS.author where BookId='$bookid'";
+                                $result=$conn->query($sql1);
+                                
+                                echo "<b>Tác giả:</b> ";
+                                while($row1=$result->fetch_assoc())
+                                {
+                                    echo $row1['Author']."&nbsp;";
+                                }
+                                echo "<br><br>";
+                                echo "<b>Nhà xuất bản:</b> ".$publisher."<br><br>";
+                                echo "<b>Năm:</b> ".$year."<br><br>";
+                                echo "<b>Số lượng:</b> ".$avail."<br><br>";
                            
                             ?>
-                                    <tr>
-                                      <td><?php echo $bookid ?></td>
-                                      <td><?php echo $name ?></td>
-                                      <td><b><?php echo $avail ?></b></td>
-                                        <td><center>
-                                            <a href="bookdetails.php?id=<?php echo $bookid; ?>" class="btn btn-primary">Chi tiết</a>
-                                            <a href="edit_book_details.php?id=<?php echo $bookid; ?>" class="btn btn-success">Cập Nhật</a>
-                                        </center></td>
-                                    </tr>
-                               <?php }} ?>
-                               </tbody>
-                                </table>
+                            
+                        <a href="book.php" class="btn btn-primary" style = "background: #FF4C29; color: white">Quay lại</a>                             
+                               </div>
+                           </div>
                             </div>
+                    <!--/.span3-->
+                    <!--/.span9-->
+                
+                    <!--/.span3-->
                     <!--/.span9-->
                 </div>
             </div>
@@ -141,6 +126,7 @@ if ($_SESSION['RollNo']) {
                 <b class="copyright">&copy; 2022 QUẢN LÝ THƯ VIỆN</b>
             </div>
         </div>
+        
         
         <!--/.wrapper-->
         <script src="scripts/jquery-1.9.1.min.js" type="text/javascript"></script>

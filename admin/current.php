@@ -8,10 +8,11 @@ if ($_SESSION['RollNo']) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sách</title>
+        <title>Thống kê</title>
         <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link type="text/css" href="css/themes.css" rel="stylesheet">
@@ -19,6 +20,7 @@ if ($_SESSION['RollNo']) {
         <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
             rel='stylesheet'>
     </head>
+    <body>
     <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -66,14 +68,16 @@ if ($_SESSION['RollNo']) {
                                 <li><a href="logout.php"><i class="menu-icon icon-signout"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
+                        <!--/.sidebar-->
                     </div>
+                    <!--/.span3-->
 
                     <div class="span9">
-                  <form class="form-horizontal row-fluid" action="book.php" method="post">
+                        <form class="form-horizontal row-fluid" action="current.php" method="post">
                                         <div class="control-group">
                                             <label class="control-label" for="Search"><b>Tìm kiếm:</b></label>
                                             <div class="controls">
-                                                <input type="text" id="title" name="title" placeholder="Enter Name/ID of Book" class="span8" required>
+                                                <input type="text" id="title" name="title" placeholder="Nhập Mã số sinh viên/ Tên sác / Mã sách" class="span8" required>
                                                 <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Tìm kiếm</button>
                                             </div>
                                         </div>
@@ -82,11 +86,10 @@ if ($_SESSION['RollNo']) {
                                     <?php
                                     if(isset($_POST['submit']))
                                         {$s=$_POST['title'];
-                                            $sql="select * from LMS.book where BookId='$s' or Title like '%$s%'";
+                                            $sql="select record.BookId,RollNo,Title,Due_Date,Date_of_Issue,datediff(curdate(),Due_Date) as x from LMS.record,LMS.book where (Date_of_Issue is NOT NULL and Date_of_Return is NULL and book.Bookid = record.BookId) and (RollNo='$s' or record.BookId='$s' or Title like '%$s%')";
                                         }
                                     else
-                                        $sql="select * from LMS.book";
-
+                                        $sql="select record.BookId,RollNo,Title,Due_Date,Date_of_Issue,datediff(curdate(),Due_Date) as x from LMS.record,LMS.book where Date_of_Issue is NOT NULL and Date_of_Return is NULL and book.Bookid = record.BookId";
                                     $result=$conn->query($sql);
                                     $rowcount=mysqli_num_rows($result);
 
@@ -100,37 +103,44 @@ if ($_SESSION['RollNo']) {
                         <table class="table" id = "tables">
                                   <thead>
                                     <tr>
-                                      <th>Mã sách</th>
-                                      <th>Tên sách</th>
-                                      <th>Số lượng</th>
-                                      <th></th>
+                                      <th>Mã Số Sinh Viên/ Tên đăng nhập</th>  
+                                      <th>Mã Sách</th>
+                                      <th>Tên Sách</th>
+                                      <th>Ngày Mượn</th>
+                                      <th>Ngày Đáo Hạn</th>
+            
                                     </tr>
                                   </thead>
                                   <tbody>
-                                    <?php
+
+                                <?php
+
                             
+
                             //$result=$conn->query($sql);
                             while($row=$result->fetch_assoc())
                             {
+                                $rollno=$row['RollNo'];
                                 $bookid=$row['BookId'];
                                 $name=$row['Title'];
-                                $avail=$row['Availability'];
+                                $issuedate=$row['Date_of_Issue'];
+                                $duedate=$row['Due_Date'];
+                                $dues=$row['x'];
                             
-                           
                             ?>
+
                                     <tr>
+                                      <td><?php echo strtoupper($rollno) ?></td>
                                       <td><?php echo $bookid ?></td>
                                       <td><?php echo $name ?></td>
-                                      <td><b><?php echo $avail ?></b></td>
-                                        <td><center>
-                                            <a href="bookdetails.php?id=<?php echo $bookid; ?>" class="btn btn-primary">Chi tiết</a>
-                                            <a href="edit_book_details.php?id=<?php echo $bookid; ?>" class="btn btn-success">Cập Nhật</a>
-                                        </center></td>
+                                      <td><?php echo $issuedate ?></td>
+                                      <td><?php echo $duedate ?></td>
                                     </tr>
-                               <?php }} ?>
-                               </tbody>
+                            <?php }} ?>
+                                    </tbody>
                                 </table>
-                            </div>
+                    </div>
+
                     <!--/.span9-->
                 </div>
             </div>

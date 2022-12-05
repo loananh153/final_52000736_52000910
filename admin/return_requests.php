@@ -8,10 +8,12 @@ if ($_SESSION['RollNo']) {
 
 <!DOCTYPE html>
 <html lang="en">
+
+  
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sách</title>
+        <title>Trả Sách</title>
         <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link type="text/css" href="css/themes.css" rel="stylesheet">
@@ -19,6 +21,7 @@ if ($_SESSION['RollNo']) {
         <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
             rel='stylesheet'>
     </head>
+    <body>
     <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -66,71 +69,55 @@ if ($_SESSION['RollNo']) {
                                 <li><a href="logout.php"><i class="menu-icon icon-signout"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
+                        <!--/.sidebar-->
                     </div>
-
                     <div class="span9">
-                  <form class="form-horizontal row-fluid" action="book.php" method="post">
-                                        <div class="control-group">
-                                            <label class="control-label" for="Search"><b>Tìm kiếm:</b></label>
-                                            <div class="controls">
-                                                <input type="text" id="title" name="title" placeholder="Enter Name/ID of Book" class="span8" required>
-                                                <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Tìm kiếm</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <br>
-                                    <?php
-                                    if(isset($_POST['submit']))
-                                        {$s=$_POST['title'];
-                                            $sql="select * from LMS.book where BookId='$s' or Title like '%$s%'";
-                                        }
-                                    else
-                                        $sql="select * from LMS.book";
-
-                                    $result=$conn->query($sql);
-                                    $rowcount=mysqli_num_rows($result);
-
-                                    if(!($rowcount))
-                                        echo "<br><center><h2><b><i>No Results</i></b></h2></center>";
-                                    else
-                                    {
-
-                                    
-                                    ?>
+                        <center>
+                        <a href="issue_requests.php" class="btn btn-info">Mượn Sách</a>
+                        <a href="return_requests.php" class="btn btn-info">Trả Sách</a>
+                        </center>
+                        <h1><i>Trả Sách</i></h1>
                         <table class="table" id = "tables">
                                   <thead>
                                     <tr>
+                                      <th>Mã số sinh viên/Tên đăng nhập</th>
                                       <th>Mã sách</th>
-                                      <th>Tên sách</th>
-                                      <th>Số lượng</th>
+                                      <th>Mã tên</th>
+
                                       <th></th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                     <?php
-                            
-                            //$result=$conn->query($sql);
+                            $sql="select return.BookId,return.RollNo,Title,datediff(curdate(),Due_Date) as x from LMS.return,LMS.book,LMS.record where return.BookId=book.BookId and return.BookId=record.BookId and return.RollNo=record.RollNo";
+                            $result=$conn->query($sql);
                             while($row=$result->fetch_assoc())
                             {
                                 $bookid=$row['BookId'];
+                                $rollno=$row['RollNo'];
                                 $name=$row['Title'];
-                                $avail=$row['Availability'];
+                                $dues=$row['x'];
+                                
                             
                            
                             ?>
                                     <tr>
+                                      <td><?php echo strtoupper($rollno) ?></td>
                                       <td><?php echo $bookid ?></td>
-                                      <td><?php echo $name ?></td>
-                                      <td><b><?php echo $avail ?></b></td>
-                                        <td><center>
-                                            <a href="bookdetails.php?id=<?php echo $bookid; ?>" class="btn btn-primary">Chi tiết</a>
-                                            <a href="edit_book_details.php?id=<?php echo $bookid; ?>" class="btn btn-success">Cập Nhật</a>
-                                        </center></td>
+                                      <td><b><?php echo $name ?></b></td>
+                                      
+                                      <td><center>
+                                                                                
+                                        <a href="acceptreturn.php?id1=<?php echo $bookid; ?>&id2=<?php echo $rollno; ?>&id3=<?php echo $dues ?>" class="btn btn-success">Nhận</a>
+                                         
+                                        <!--a href="rejectreturn.php?id1=<?php echo $bookid; ?>&id2=<?php echo $rollno; ?>" class="btn btn-danger">Reject</a-->
+                                    </center></td>
                                     </tr>
-                               <?php }} ?>
+                               <?php } ?>
                                </tbody>
                                 </table>
                             </div>
+                    <!--/.span3-->
                     <!--/.span9-->
                 </div>
             </div>
@@ -138,9 +125,10 @@ if ($_SESSION['RollNo']) {
         </div>
 <div class="footer">
             <div class="container">
-                <b class="copyright">&copy; 2022 QUẢN LÝ THƯ VIỆN</b>
+                <b class="copyright">&copy; 2022 QUẢN LÝ THƯ VIỆN </b>
             </div>
         </div>
+        
         
         <!--/.wrapper-->
         <script src="scripts/jquery-1.9.1.min.js" type="text/javascript"></script>

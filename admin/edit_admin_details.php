@@ -1,4 +1,5 @@
 <?php
+ob_start();
 require('dbconn.php');
 ?>
 
@@ -11,7 +12,7 @@ if ($_SESSION['RollNo']) {
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sách</title>
+        <title>Cập Nhật Thông Tin</title>
         <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link type="text/css" href="css/themes.css" rel="stylesheet">
@@ -19,6 +20,7 @@ if ($_SESSION['RollNo']) {
         <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
             rel='stylesheet'>
     </head>
+    <body>
     <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -66,71 +68,72 @@ if ($_SESSION['RollNo']) {
                                 <li><a href="logout.php"><i class="menu-icon icon-signout"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
+                        <!--/.sidebar-->
                     </div>
-
+                    <!--/.span3-->
+                    
                     <div class="span9">
-                  <form class="form-horizontal row-fluid" action="book.php" method="post">
-                                        <div class="control-group">
-                                            <label class="control-label" for="Search"><b>Tìm kiếm:</b></label>
-                                            <div class="controls">
-                                                <input type="text" id="title" name="title" placeholder="Enter Name/ID of Book" class="span8" required>
-                                                <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Tìm kiếm</button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    <br>
-                                    <?php
-                                    if(isset($_POST['submit']))
-                                        {$s=$_POST['title'];
-                                            $sql="select * from LMS.book where BookId='$s' or Title like '%$s%'";
-                                        }
-                                    else
-                                        $sql="select * from LMS.book";
-
-                                    $result=$conn->query($sql);
-                                    $rowcount=mysqli_num_rows($result);
-
-                                    if(!($rowcount))
-                                        echo "<br><center><h2><b><i>No Results</i></b></h2></center>";
-                                    else
-                                    {
-
-                                    
-                                    ?>
-                        <table class="table" id = "tables">
-                                  <thead>
-                                    <tr>
-                                      <th>Mã sách</th>
-                                      <th>Tên sách</th>
-                                      <th>Số lượng</th>
-                                      <th></th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <?php
-                            
-                            //$result=$conn->query($sql);
-                            while($row=$result->fetch_assoc())
-                            {
-                                $bookid=$row['BookId'];
-                                $name=$row['Title'];
-                                $avail=$row['Availability'];
-                            
-                           
-                            ?>
-                                    <tr>
-                                      <td><?php echo $bookid ?></td>
-                                      <td><?php echo $name ?></td>
-                                      <td><b><?php echo $avail ?></b></td>
-                                        <td><center>
-                                            <a href="bookdetails.php?id=<?php echo $bookid; ?>" class="btn btn-primary">Chi tiết</a>
-                                            <a href="edit_book_details.php?id=<?php echo $bookid; ?>" class="btn btn-success">Cập Nhật</a>
-                                        </center></td>
-                                    </tr>
-                               <?php }} ?>
-                               </tbody>
-                                </table>
+                        <div class="module">
+                            <div class="module-head" style = "background: #FF4C29; ">
+                                <h3 style = " color: white">Cập Nhật Thông Tin</h3>
                             </div>
+                            <div class="module-body">
+
+
+                                <?php
+                                $rollno = $_SESSION['RollNo'];
+                                $sql="select * from LMS.user where RollNo='$rollno'";
+                                $result=$conn->query($sql);
+                                $row=$result->fetch_assoc();
+
+                                $name=$row['Name'];
+                                $email=$row['EmailId'];
+                                $mobno=$row['MobNo'];
+                                $pswd=$row['Password'];
+                                ?>    
+                                
+                                <form class="form-horizontal row-fluid" action="edit_admin_details.php?id=<?php echo $rollno ?>" method="post">
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="Name"><b>Tên :</b></label>
+                                        <div class="controls">
+                                            <input type="text" id="Name" name="Name" value= "<?php echo $name?>" class="span8" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="EmailId"><b>Email:</b></label>
+                                        <div class="controls">
+                                            <input type="text" id="EmailId" name="EmailId" value= "<?php echo $email?>" class="span8" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="MobNo"><b>Số điện thoại:</b></label>
+                                        <div class="controls">
+                                            <input type="text" id="MobNo" name="MobNo" value= "<?php echo $mobno?>" class="span8" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="control-group">
+                                        <label class="control-label" for="Password"><b>Mật khẩu mới:</b></label>
+                                        <div class="controls">
+                                            <input type="password" id="Password" name="Password"  value= "<?php echo $pswd?>" class="span8" required>
+                                        </div>
+                                    </div>   
+
+                                    <div class="control-group">
+                                            <div class="controls">
+                                                <button type="submit" name="submit"class="btn-primary" style = "background: #FF4C29; color: white"><center>Cập Nhật</center></button>
+                                            </div>
+                                        </div>                                                                     
+
+                                </form>
+                                       
+                        </div>
+                        </div>  
+                    </div>
+                    
                     <!--/.span9-->
                 </div>
             </div>
@@ -150,6 +153,30 @@ if ($_SESSION['RollNo']) {
         <script src="scripts/flot/jquery.flot.resize.js" type="text/javascript"></script>
         <script src="scripts/datatables/jquery.dataTables.js" type="text/javascript"></script>
         <script src="scripts/common.js" type="text/javascript"></script>
+
+<?php
+if(isset($_POST['submit']))
+{
+    $rollno = $_GET['id'];
+    $name=$_POST['Name'];
+    $email=$_POST['EmailId'];
+    $mobno=$_POST['MobNo'];
+    $pswd=$_POST['Password'];
+
+$sql1="update LMS.user set Name='$name', EmailId='$email', MobNo='$mobno', Password='$pswd' where RollNo='$rollno'";
+
+
+
+if($conn->query($sql1) === TRUE){
+echo "<script type='text/javascript'>alert('Success')</script>";
+header( "Refresh:0.01; url=index.php", true, 303);
+}
+else
+{//echo $conn->error;
+echo "<script type='text/javascript'>alert('Error')</script>";
+}
+}
+?>
       
     </body>
 

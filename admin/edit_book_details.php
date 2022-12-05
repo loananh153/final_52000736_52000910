@@ -1,4 +1,5 @@
 <?php
+ob_start();
 require('dbconn.php');
 ?>
 
@@ -8,10 +9,12 @@ if ($_SESSION['RollNo']) {
 
 <!DOCTYPE html>
 <html lang="en">
+
+
 <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Sách</title>
+        <title>Cập Nhật Thông Tin Sách</title>
         <link type="text/css" href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link type="text/css" href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link type="text/css" href="css/themes.css" rel="stylesheet">
@@ -19,6 +22,7 @@ if ($_SESSION['RollNo']) {
         <link type="text/css" href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600'
             rel='stylesheet'>
     </head>
+<body>
     <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -66,71 +70,75 @@ if ($_SESSION['RollNo']) {
                                 <li><a href="logout.php"><i class="menu-icon icon-signout"></i>Đăng xuất</a></li>
                             </ul>
                         </div>
+                        <!--/.sidebar-->
                     </div>
-
+                    <!--/.span3-->
+                    
                     <div class="span9">
-                  <form class="form-horizontal row-fluid" action="book.php" method="post">
+                        <div class="module">
+                            <div class="module-head" style = "background: #FF4C29; ">
+                                <h3 style = " color: white">Cập Nhật Thông Tin Sách</h3>
+                            </div>
+                            <div class="module-body">
+
+                                <?php
+                                    $bookid = $_GET['id'];
+                                    $sql = "select * from LMS.book where Bookid='$bookid'";
+                                    $result=$conn->query($sql);
+                                    $row=$result->fetch_assoc();
+                                    $name=$row['Title'];
+                                    $publisher=$row['Publisher'];
+                                    $year=$row['Year'];
+                                    $avail=$row['Availability'];
+
+
+                                ?>
+
+                                    <br >
+                                    <form class="form-horizontal row-fluid" action="edit_book_details.php?id=<?php echo $bookid ?>" method="post">
                                         <div class="control-group">
-                                            <label class="control-label" for="Search"><b>Tìm kiếm:</b></label>
+                                            <b>
+                                            <label class="control-label" for="Title">Tên Sách:</label></b>
                                             <div class="controls">
-                                                <input type="text" id="title" name="title" placeholder="Enter Name/ID of Book" class="span8" required>
-                                                <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Tìm kiếm</button>
+                                                <input type="text" id="Title" name="Title" value= "<?php echo $name?>" class="span8" required>
                                             </div>
                                         </div>
-                                    </form>
-                                    <br>
-                                    <?php
-                                    if(isset($_POST['submit']))
-                                        {$s=$_POST['title'];
-                                            $sql="select * from LMS.book where BookId='$s' or Title like '%$s%'";
-                                        }
-                                    else
-                                        $sql="select * from LMS.book";
 
-                                    $result=$conn->query($sql);
-                                    $rowcount=mysqli_num_rows($result);
+                                        <div class="control-group">
+                                            <b>
+                                            <label class="control-label" for="Publisher">Nhà Xuất Bản:</label></b>
+                                            <div class="controls">
+                                                <input type="text" id="Publisher" name="Publisher" value= "<?php echo $publisher?>" class="span8" required>
+                                            </div>
+                                        </div>
 
-                                    if(!($rowcount))
-                                        echo "<br><center><h2><b><i>No Results</i></b></h2></center>";
-                                    else
-                                    {
+                                        <div class="control-group">
+                                            <b>
+                                            <label class="control-label" for="Year">Năm:</label></b>
+                                            <div class="controls">
+                                                <input type="text" id="Year" name="Year" value= "<?php echo $year?>" class="span8" required>
+                                            </div>
+                                        </div>
 
-                                    
-                                    ?>
-                        <table class="table" id = "tables">
-                                  <thead>
-                                    <tr>
-                                      <th>Mã sách</th>
-                                      <th>Tên sách</th>
-                                      <th>Số lượng</th>
-                                      <th></th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <?php
-                            
-                            //$result=$conn->query($sql);
-                            while($row=$result->fetch_assoc())
-                            {
-                                $bookid=$row['BookId'];
-                                $name=$row['Title'];
-                                $avail=$row['Availability'];
-                            
-                           
-                            ?>
-                                    <tr>
-                                      <td><?php echo $bookid ?></td>
-                                      <td><?php echo $name ?></td>
-                                      <td><b><?php echo $avail ?></b></td>
-                                        <td><center>
-                                            <a href="bookdetails.php?id=<?php echo $bookid; ?>" class="btn btn-primary">Chi tiết</a>
-                                            <a href="edit_book_details.php?id=<?php echo $bookid; ?>" class="btn btn-success">Cập Nhật</a>
-                                        </center></td>
-                                    </tr>
-                               <?php }} ?>
-                               </tbody>
-                                </table>
-                            </div>
+                                        <div class="control-group">
+                                            <b>
+                                            <label class="control-label" for="Availability">Số Lượng:</label></b>
+                                            <div class="controls">
+                                                <input type="text" id="Availability" name="Availability" value= "<?php echo $avail?>" class="span8" required>
+                                            </div>
+                                        </div>
+
+                                        <div class="control-group">
+                                            <div class="controls">
+                                                <button type="submit" name="submit"class="btn" style = "background: #FF4C29; color: white">Cập Nhật</button>
+                                            </div>
+                                        </div>
+
+                                    </form> 
+                                </div>   
+                            </div>          
+                    </div>
+                    
                     <!--/.span9-->
                 </div>
             </div>
@@ -141,6 +149,7 @@ if ($_SESSION['RollNo']) {
                 <b class="copyright">&copy; 2022 QUẢN LÝ THƯ VIỆN</b>
             </div>
         </div>
+       
         
         <!--/.wrapper-->
         <script src="scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -150,6 +159,30 @@ if ($_SESSION['RollNo']) {
         <script src="scripts/flot/jquery.flot.resize.js" type="text/javascript"></script>
         <script src="scripts/datatables/jquery.dataTables.js" type="text/javascript"></script>
         <script src="scripts/common.js" type="text/javascript"></script>
+
+<?php
+if(isset($_POST['submit']))
+{
+    $bookid = $_GET['id'];
+    $name=$_POST['Title'];
+    $publisher=$_POST['Publisher'];
+    $year=$_POST['Year'];
+    $avail=$_POST['Availability'];
+
+$sql1="update LMS.book set Title='$name', Publisher='$publisher', Year='$year', Availability='$avail' where BookId='$bookid'";
+
+
+
+if($conn->query($sql1) === TRUE){
+echo "<script type='text/javascript'>alert('Success')</script>";
+header( "Refresh:0.01; url=book.php", true, 303);
+}
+else
+{//echo $conn->error;
+echo "<script type='text/javascript'>alert('Error')</script>";
+}
+}
+?>
       
     </body>
 
